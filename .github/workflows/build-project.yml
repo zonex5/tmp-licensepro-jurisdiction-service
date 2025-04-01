@@ -42,9 +42,8 @@ jobs:
           TO_EMAIL: protari@amsoft-group.com
           FROM_EMAIL: vpascari@amsoft-group.com
         run: |
-          echo "Reading scan report..."
-          REPORT_CONTENT=$(cat trivy-report.txt | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
-
+          echo "Reading HTML email body..."
+          HTML_CONTENT=$(cat email-body.html | sed 's/"/\\"/g' | tr -d '\n')      
           cat <<EOF > sendgrid_payload.json
           {
             "personalizations": [{
@@ -54,11 +53,12 @@ jobs:
             "subject": "Trivy Scan Report",
             "content": [{
               "type": "text/html",
-              "value": "$(cat email-body.html | sed 's/"/\\"/g' | tr -d '\n')"
+              "value": "${HTML_CONTENT}"
             }]
           }
           EOF
 
+          echo "Sending email..."
           curl --request POST \
           --url https://api.sendgrid.com/v3/mail/send \
           --header "Authorization: Bearer $SENDGRID_API_KEY" \
