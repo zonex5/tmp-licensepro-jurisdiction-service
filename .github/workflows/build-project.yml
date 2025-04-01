@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  pmd:
+  trivy:
     permissions: write-all
     runs-on: ubuntu-latest
 
